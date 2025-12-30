@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { createChatStyle } from '@/assets/styles/Chat.style';
@@ -27,26 +27,32 @@ export default function IndividualChatScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Chat with {userId}</Text>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+            <View style={styles.container}>
+                <Text style={styles.header}>Chat with {userId}</Text>
 
-            <FlatList
-                data={messages}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.messages}
-                renderItem={({ item }) => (
-                    <View
-                        style={[
-                            styles.bubble,
-                            item.isMe ? styles.myBubble : styles.otherBubble,
-                        ]}
-                    >
-                        <Text style={styles.bubbleText}>{item.text}</Text>
-                    </View>
-                )}
-            />
+                <FlatList
+                    data={messages}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={styles.messages}
+                    renderItem={({ item }) => (
+                        <View
+                            style={[
+                                styles.bubble,
+                                item.isMe ? styles.myBubble : styles.otherBubble,
+                            ]}
+                        >
+                            <Text style={styles.bubbleText}>{item.text}</Text>
+                        </View>
+                    )}
+                />
 
-            <ChatInput onSend={sendMessage} />
-        </View>
+                <ChatInput onSend={sendMessage} />
+            </View>
+        </KeyboardAvoidingView>
     );
 }

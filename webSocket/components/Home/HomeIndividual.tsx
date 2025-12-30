@@ -1,6 +1,7 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import SectionHeader from './SectionHeader';
 import { createHomeStyle } from '@/assets/styles/Home.style';
+import { useRouter } from 'expo-router';
 
 const USERS = [
     { id: '1', name: 'Rahul', online: true },
@@ -8,13 +9,21 @@ const USERS = [
 ];
 
 export default function HomeIndividuals() {
+    const router = useRouter();
     const styles = createHomeStyle();
     return (
         <View style={styles.section}>
             <SectionHeader title="Individuals" />
 
             {USERS.map((user) => (
-                <TouchableOpacity key={user.id} style={styles.userRow}>
+                <TouchableOpacity key={user.id} style={styles.userRow}
+                    onPress={() =>
+                        router.push({
+                            pathname: '/group-chat/[groupId]',
+                            params: { groupId: 683746283 },
+                        })
+                    }
+                >
                     <View style={styles.userInfo}>
                         <Text style={styles.userName}>{user.name}</Text>
                         <Text

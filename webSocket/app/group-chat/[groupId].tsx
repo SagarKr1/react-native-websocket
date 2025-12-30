@@ -1,4 +1,10 @@
-import { View, Text, FlatList } from 'react-native';
+import {
+    View,
+    Text,
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+} from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { createChatStyle } from '@/assets/styles/Chat.style';
@@ -28,29 +34,36 @@ export default function GroupChatScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Group: {groupId}</Text>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+            <View style={styles.container}>
+                <Text style={styles.header}>Group: {groupId}</Text>
 
-            <FlatList
-                data={messages}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.messages}
-                renderItem={({ item }) => (
-                    <View
-                        style={[
-                            styles.bubble,
-                            item.isMe ? styles.myBubble : styles.otherBubble,
-                        ]}
-                    >
-                        {!item.isMe && item.sender && (
-                            <Text style={styles.sender}>{item.sender}</Text>
-                        )}
-                        <Text style={styles.bubbleText}>{item.text}</Text>
-                    </View>
-                )}
-            />
+                <FlatList
+                    data={messages}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={styles.messages}
+                    keyboardShouldPersistTaps="handled"
+                    renderItem={({ item }) => (
+                        <View
+                            style={[
+                                styles.bubble,
+                                item.isMe ? styles.myBubble : styles.otherBubble,
+                            ]}
+                        >
+                            {!item.isMe && item.sender && (
+                                <Text style={styles.sender}>{item.sender}</Text>
+                            )}
+                            <Text style={styles.bubbleText}>{item.text}</Text>
+                        </View>
+                    )}
+                />
 
-            <ChatInput onSend={sendMessage} />
-        </View>
+                <ChatInput onSend={sendMessage} />
+            </View>
+        </KeyboardAvoidingView>
     );
 }
