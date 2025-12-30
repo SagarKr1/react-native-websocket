@@ -1,43 +1,74 @@
 import { createUserStyle } from '@/assets/styles/User.style';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { userList } from '@/assets/api/userList';
 
 type User = {
-    id: string;
+    email: string;
     name: string;
-    online: boolean;
+    phone: Number;
 };
-
-const USERS: User[] = [
-    { id: '1', name: 'Rahul', online: true },
-    { id: '2', name: 'Aman', online: false },
-    { id: '3', name: 'Suman', online: true },
-];
 
 export default function UsersScreen() {
     const router = useRouter();
-    const styles = createUserStyle()
+    const styles = createUserStyle();
+
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const res = await userList();
+                // console.log("user List : ", res['body-json']['body']);
+                setUsers(res['body-json']['body']['items']);                 
+            } catch (error) {
+                console.log('Failed to fetch users'+ error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    if (loading) {
+        return (
+            <View style={styles.loader}>
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>All Users</Text>
 
             <FlatList<User>
-                data={USERS}
-                keyExtractor={(item) => item.id}
+                data={users}
+                keyExtractor={(item) => item.email}
+                contentContainerStyle={styles.list}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.userRow}
-                    onPress={()=>router.push('/individual-chat/userId')}
+                    <TouchableOpacity
+                        style={styles.userRow}
+                        onPress={() =>
+                            router.push({
+                                pathname: '/individual-chat/[userId]',
+                                params: { userId: item.name },
+                            })
+                        }
                     >
                         <View>
                             <Text style={styles.userName}>{item.name}</Text>
-                            <Text
+                            {/* <Text
                                 style={[
                                     styles.status,
                                     { color: item.online ? 'green' : 'gray' },
                                 ]}
                             >
                                 {item.online ? 'Online' : 'Offline'}
-                            </Text>
+                            </Text> */}
                         </View>
 
                         <Text style={styles.action}>Message</Text>

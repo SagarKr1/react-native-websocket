@@ -39,5 +39,14 @@ export const createUserStyle = () => {
             fontSize: 14,
             fontWeight: '500',
         },
+        loader: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+
+        list: {
+            paddingBottom: 20,
+        },
     })
 }
