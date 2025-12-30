@@ -1,8 +1,10 @@
 import { createUserStyle } from '@/assets/styles/User.style';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { userList } from '@/assets/api/userList';
+import { getUserFromToken } from '@/assets/api/InfoToken';
+import { UserChat } from '@/assets/api/createNewUserChat';
 
 type User = {
     email: string;
@@ -22,9 +24,9 @@ export default function UsersScreen() {
             try {
                 const res = await userList();
                 // console.log("user List : ", res['body-json']['body']);
-                setUsers(res['body-json']['body']['items']);                 
+                setUsers(res['body-json']['body']['items']);
             } catch (error) {
-                console.log('Failed to fetch users'+ error);
+                console.log('Failed to fetch users' + error);
             } finally {
                 setLoading(false);
             }
@@ -32,6 +34,39 @@ export default function UsersScreen() {
 
         fetchUsers();
     }, []);
+
+
+    type userData = {
+        id: String,
+        name: String
+    }
+
+    const manageNewChatUser = async ({ id, name }: userData) => {
+        try {
+            Alert.alert("Info", `${id}\n${name}`);
+            const token = await getUserFromToken();
+            if (!token?.email || !token?.name) {
+                console.log("Invalid token data");
+                return;
+            }
+
+            // ✅ ensure clean string arrays
+            const userIdList: string[] = [token.email, String(id)];
+            const userNameList: string[] = [token.name, String(name)];
+            console.log(userIdList + "\n" + userNameList);
+            const res = await UserChat({
+                userId: userIdList,
+                userName: userNameList,
+            });
+            console.log("Response create user chat ",res);
+            
+
+        } catch (e) {
+            console.log("Error : ", e);
+        } finally {
+
+        }
+    }
 
     if (loading) {
         return (
@@ -53,10 +88,7 @@ export default function UsersScreen() {
                     <TouchableOpacity
                         style={styles.userRow}
                         onPress={() =>
-                            router.push({
-                                pathname: '/individual-chat/[userId]',
-                                params: { userId: item.name },
-                            })
+                            manageNewChatUser({ id: item.email, name: item.name })
                         }
                     >
                         <View>

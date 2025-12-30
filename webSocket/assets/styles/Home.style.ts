@@ -6,6 +6,7 @@ export const createHomeStyle = () => {
             flex: 1,
             backgroundColor: '#fff',
             paddingHorizontal: 16,
+            paddingTop:20
         },
 
         section: {

@@ -6,9 +6,9 @@ import { ScrollView, View } from 'react-native';
 export default function HomeScreen() {
     const styles = createHomeStyle()
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <HomeGroups />
             <HomeIndividuals />
-        </ScrollView>
+        </View>
     );
 }
